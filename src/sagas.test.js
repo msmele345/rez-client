@@ -1,7 +1,7 @@
 import {expectSaga, testSaga} from 'redux-saga-test-plan';
 import {pageLoadWorker, workerSaga} from "./sagas";
 import * as matchers from 'redux-saga-test-plan/matchers';
-import {call, put} from 'redux-saga/effects';
+import {call} from 'redux-saga/effects';
 import {fetchPageLoadRestaurants, fetchRestaurantsByBorough} from './api/restaurantsApi';
 import {postRestaurants} from "./slices/restaurantsSlice";
 
@@ -60,9 +60,15 @@ describe('Runs the saga', () => {
 
         testSaga(workerSaga, requestAction)
             .next()
+            .put({type: "app/setIsLoading", payload: true})
+            .next()
             .call(fetchRestaurantsByBorough, "Brooklyn")
             .next({data: restaurants})
-            .put({ type: 'API_CALL_SUCCESS', payload: { restaurants: restaurants }})
+            .put({type: 'API_CALL_SUCCESS', payload: {restaurants: restaurants}})
+            .next()
+            .put({type: 'restaurants/postRestaurants', payload: [...restaurants]})
+            .next()
+            .put({type: "app/setIsLoading", payload: false})
             .next()
             .isDone();
     });
@@ -73,24 +79,46 @@ describe('Runs the saga', () => {
 
         testSaga(workerSaga, requestAction)
             .next()
+            .put({type: "app/setIsLoading", payload: true})
+            .next()
             .call(fetchRestaurantsByBorough, "Brooklyn")
             .throw(error)
-            .put({type: "API_CALL_FAILURE", error})
+            .put({type: 'restaurants/restaurants_error', payload: 'Something bad'})
             .next()
             .isDone();
     });
-
 
     it('GET_ALL_RESTAURANTS SAGA for PAGE LOAD', function () {
 
         testSaga(pageLoadWorker)
             .next()
+            .put({type: "app/setIsLoading", payload: true})
+            .next()
             .call(fetchPageLoadRestaurants)
             .next({data: restaurants})
             .put({type: "restaurants/pageLoadSuccess", payload: {restaurants: restaurants}})
             .next()
+            .put({type: "restaurants/loadLandingRestaurants", payload: [...restaurants]})
+            .next()
+            .put({type: "app/setIsLoading", payload: false})
+            .next()
             .isDone();
 
+    });
+
+    it('pageLoad - puts ERROR details to store upon api call failure ', function () {
+
+        let pageLoadError = new Error("Page Load Failed Due To Server Error");
+
+        testSaga(pageLoadWorker)
+            .next()
+            .put({type: "app/setIsLoading", payload: true})
+            .next()
+            .call(fetchPageLoadRestaurants)
+            .throw(pageLoadError)
+            .put({type: 'restaurants/restaurants_error', payload: 'Page Load Failed Due To Server Error'})
+            .next()
+            .isDone();
     });
 
     it('should call the api and put the response', function () {
@@ -101,7 +129,7 @@ describe('Runs the saga', () => {
                 // [call(fetchRestaurantsByBorough, requestAction), restaurants],
                 [matchers.call.fn(fetchRestaurantsByBorough), restaurants]
             ])
-            .put({ type: 'API_CALL_SUCCESS', payload: { restaurants: [] } })
+            .put({type: 'API_CALL_SUCCESS', payload: {restaurants: []}})
             .run()
     });
 

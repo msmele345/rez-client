@@ -10,7 +10,7 @@ const LandingPage = () => {
 
     useEffect(() => {
         dispatch(getAllRestaurantsRequest())
-    },[]);
+    }, []);
 
     return (
         <div>

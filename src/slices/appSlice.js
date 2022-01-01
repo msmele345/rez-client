@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    isUserSubmit: false
+    isUserSubmit: false,
+    isLoading: false
 }
 
 const appSlice = createSlice({
@@ -12,9 +13,18 @@ const appSlice = createSlice({
             return {
                 isUserSubmit: action.payload
             }
+        },
+        setIsLoading(state, action) {
+            return {
+                isLoading: action.payload
+            }
         }
     }
 });
 
-export const {setUserSubmit} = appSlice.actions;
+export const {
+    setUserSubmit,
+    setIsLoading
+} = appSlice.actions;
+
 export default appSlice.reducer;

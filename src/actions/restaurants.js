@@ -1,5 +1,4 @@
 export const Types = {
-    // GET_RESTAURANTS_SUCCESS: "restaurants/get_restaurants_success",
     GET_RESTAURANTS_SUCCESS: "API_CALL_SUCCESS",
     SET_USER_SUBMIT: "app/user-submit",
     GET_RESTAURANTS_REQUEST: "API_CALL_REQUEST",
@@ -14,7 +13,7 @@ export const getRestaurantsRequest = (borough) => ({
 });
 
 export const getAllRestaurantsRequest = () => ({
-   type : Types.GET_ALL_RESTAURANTS_REQUEST
+    type: Types.GET_ALL_RESTAURANTS_REQUEST
 });
 
 export const getAllRestaurantsSuccess = (restaurants) => ({
@@ -31,6 +30,7 @@ export const getRestaurantsSuccess = ({restaurants}) => ({
     }
 });
 
-export const setUserSubmit = () => ({
-
+export const setApiError = (error) => ({
+    type: Types.RESTAURANTS_ERROR,
+    payload: error.message
 });

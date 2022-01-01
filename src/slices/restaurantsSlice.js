@@ -10,12 +10,11 @@ const restaurantsSlice = createSlice({
             return [...state, ...action.payload]
         },
         loadLandingRestaurants(state, action) {
-            // return [...state, action.payload]
             return [...state, ...action.payload]
         },
         postRestaurants(state, action) {
-            // action.payload.forEach(res => state.push(res));
             state = [...action.payload]
+            // return [...state, ...action.payload]
             return state;
         },
         clearRestaurants(state, action) {

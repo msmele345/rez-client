@@ -26,20 +26,32 @@ const RestaurantList = () => {
     const restaurants = useSelector(state => state.restaurants);
     const appState = useSelector(({app}) => app);
 
-    const {isUserSubmit} = appState;
+    const {isUserSubmit, isLoading} = appState;
 
     const renderHeader = isUserSubmit => isUserSubmit
         ? restaurants[0].borough
         : "Trending";
 
+    const renderGrid = () => {
+        if(!isLoading) {
+            return (
+                <DataGrid
+                    rows={restaurants}
+                    columns={restaurantColumns}
+                    pageSize={5}
+                />
+            )
+        } else {
+            return (
+                <></>
+            )
+        }
+    }
+
     return (
         <div className="data-grid">
             <h3>{renderHeader(isUserSubmit)} Restaurants:</h3>
-            <DataGrid
-                rows={restaurants}
-                columns={restaurantColumns}
-                pageSize={5}
-            />
+            {renderGrid()}
         </div>
     )
 };
