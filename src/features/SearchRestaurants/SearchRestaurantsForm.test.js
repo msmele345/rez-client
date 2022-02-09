@@ -1,14 +1,27 @@
 import React from "react";
 import {render, screen} from '../../test-utils/testUtils';
+import userEvent from "@testing-library/user-event";
 import SearchRestaurantsForm from "./SearchRestaurantsForm";
-import {fireEvent} from "@testing-library/react";
+import * as reactRedux from 'react-redux';
+import {setUserSubmit} from "../../slices/appSlice";
 
-// var mockDispatch = jest.fn();
-// jest.mock("react-redux", () => ({
-//     useDispatch: mockDispatch
-// }));
-// jest.mock("react-redux");
+
+jest.mock("react-redux", () => ({
+    useSelector: jest.fn(),
+    useDispatch: jest.fn(),
+}));
 describe("<SearchRestaurantForm>", () => {
+
+    let mockUseDispatch = reactRedux.useDispatch;
+
+    beforeEach(() => {
+        mockUseDispatch.mockImplementationOnce(() => () => {});
+    });
+
+    afterEach(() => {
+        mockUseDispatch.mockClear();
+    });
+
 
     it('should render form to enter res borough of choice', function () {
 
@@ -18,10 +31,10 @@ describe("<SearchRestaurantForm>", () => {
 
         expect(submitButton.value).toEqual("Search Restaurants");
 
-        fireEvent.click(submitButton);
-        //need fireevent select after changing menu selection
-        // expect(mockDispatch).toBeCalledWith(setUserSubmit(false))
-        expect(screen.getByText("Bronx")).toBeTruthy();
+        userEvent.click(submitButton);
+        //need firevent select after changing menu selection
+        expect(mockUseDispatch).toBeCalledWith(setUserSubmit(true))
+        expect(screen.getByText("Bronx")).toBeInTheDocument();
     });
 });
 
